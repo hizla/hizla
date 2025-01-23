@@ -24,3 +24,8 @@ go.work.sum
 
 # release tarballs
 /dist/hizla-*
+
+# nix
+result-*
+result
+repl-result-*
