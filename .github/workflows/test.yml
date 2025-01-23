@@ -5,7 +5,7 @@ on:
   - pull_request
 
 jobs:
-  tests:
+  flake:
     name: Run flake checks
     runs-on: ubuntu-latest
     permissions:
@@ -31,3 +31,39 @@ jobs:
       - name: Run tests
         run: |
           nix --print-build-logs --experimental-features 'nix-command flakes' flake check --all-systems
+
+  go:
+    name: Run Go tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '>=1.23.3'
+
+      - name: Go generate
+        run: >-
+          go generate ./...
+
+      - name: Run tests
+        run: >-
+          go test ./...
+
+      - name: Build for test
+        id: build-test
+        run: >-
+          HIZLA_VERSION="$(git rev-parse --short HEAD)"
+          bash -c './dist/release.sh &&
+          echo "rev=$HIZLA_VERSION" >> $GITHUB_OUTPUT'
+
+      - name: Upload test build
+        uses: actions/upload-artifact@v4
+        with:
+          name: "hizla-${{ steps.build-test.outputs.rev }}"
+          path: dist/hizla-*
+          retention-days: 1
