@@ -1,0 +1,33 @@
+name: Test
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  tests:
+    name: Run flake checks
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: nixbuild/nix-quick-install-action@v29
+
+      - name: Restore and cache Nix store
+        uses: nix-community/cache-nix-action@v5
+        with:
+          primary-key: test-${{ runner.os }}-${{ hashFiles('**/*.nix') }}
+          restore-prefixes-first-match: test-${{ runner.os }}-
+          gc-max-store-size-linux: 1073741824
+          purge: true
+          purge-prefixes: test-${{ runner.os }}-
+          purge-created: 60
+          purge-primary-key: never
+
+      - name: Run tests
+        run: |
+          nix --print-build-logs --experimental-features 'nix-command flakes' flake check --all-systems
