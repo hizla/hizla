@@ -3,6 +3,8 @@
   programs = {
     nixfmt.enable = true;
     gofmt.enable = true;
+    shellcheck.enable = true;
+    shfmt.enable = true;
     actionlint.enable = true;
   };
 }
