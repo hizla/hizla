@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"text/tabwriter"
 
@@ -22,6 +23,9 @@ func init() {
 }
 
 func main() {
+	log.SetFlags(0)
+	log.SetPrefix("hizla: ")
+
 	flag.CommandLine.Usage = func() {
 		fmt.Println()
 		fmt.Println("Usage:\thizla [-v] COMMAND [OPTIONS]")
@@ -37,7 +41,7 @@ func main() {
 			_, _ = fmt.Fprintf(w, "\t%s\t%s\n", c[0], c[1])
 		}
 		if err := w.Flush(); err != nil {
-			fmt.Printf("hizla: cannot write command list: %v\n", err)
+			log.Printf("cannot write command list: %v", err)
 		}
 		fmt.Println()
 	}
@@ -62,6 +66,11 @@ func main() {
 		os.Exit(0)
 	case "help": // print help message
 		flag.CommandLine.Usage()
+		return
+
+	// internal commands
+	case "serve":
+		doServe(args)
 		os.Exit(0)
 	}
 }
