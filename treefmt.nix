@@ -7,4 +7,8 @@
     shfmt.enable = true;
     actionlint.enable = true;
   };
+
+  settings.global = {
+    excludes = [ "LICENSE" ];
+  };
 }
