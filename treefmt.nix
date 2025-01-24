@@ -6,6 +6,7 @@
     shellcheck.enable = true;
     shfmt.enable = true;
     actionlint.enable = true;
+    mdformat.enable = true;
   };
 
   settings.global = {
