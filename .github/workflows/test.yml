@@ -30,7 +30,7 @@ jobs:
 
       - name: Run tests
         run: |
-          nix --print-build-logs --experimental-features 'nix-command flakes' flake check --all-systems
+          nix --print-build-logs --experimental-features 'nix-command flakes' flake check
 
   go:
     name: Run Go tests

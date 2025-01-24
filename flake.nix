@@ -17,6 +17,7 @@
     }:
     let
       supportedSystems = [
+        "aarch64-linux"
         "x86_64-linux"
       ];
 
