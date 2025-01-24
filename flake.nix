@@ -17,8 +17,6 @@
     }:
     let
       supportedSystems = [
-        "aarch64-linux"
-        "i686-linux"
         "x86_64-linux"
       ];
 
@@ -32,10 +30,16 @@
         system:
         let
           pkgs = nixpkgsFor.${system};
+          inherit (pkgs) callPackage;
         in
         {
           default = self.packages.${system}.hizla;
-          hizla = pkgs.callPackage ./package.nix { };
+          hizla = callPackage ./package.nix { };
+
+          waitlist = callPackage ./extra/waitlist {
+            backend = callPackage ./extra/waitlist/backend.nix { };
+            frontend = callPackage ./extra/waitlist/frontend.nix;
+          };
         }
       );
 

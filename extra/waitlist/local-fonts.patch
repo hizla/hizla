@@ -1,0 +1,98 @@
+diff --git a/app/layout.tsx b/app/layout.tsx
+index efc8c22..4dea3b2 100644
+--- a/app/layout.tsx
++++ b/app/layout.tsx
+@@ -1,17 +1,87 @@
+ import type { Metadata } from "next";
+ import "./globals.css";
+ import Header from "@/components/layout/header";
+-import { IBM_Plex_Mono, Inter } from "next/font/google";
++import localFont from 'next/font/local';
+ import QueryProvider from "./query-provider";
+ import { Toaster } from "sonner";
+ 
+-const inter = Inter({
+-  subsets: ["latin"],
++const inter = localFont({
++  src: '../InterVariable.ttf',
+   display: "swap",
+ });
+-const ibm = IBM_Plex_Mono({
+-  weight: ["100", "200", "300", "400", "500", "600", "700"],
+-  subsets: ["latin"],
++const ibm = localFont({
++  src: [
++    {
++      path: '../ibm-plex/IBMPlexMono-Thin.otf',
++      weight: '100',
++      style: 'normal',
++    },
++    {
++      path: '../ibm-plex/IBMPlexMono-ThinItalic.otf',
++      weight: '100',
++      style: 'italic',
++    },
++    {
++      path: '../ibm-plex/IBMPlexMono-ExtraLight.otf',
++      weight: '200',
++      style: 'normal',
++    },
++    {
++      path: '../ibm-plex/IBMPlexMono-ExtraLightItalic.otf',
++      weight: '200',
++      style: 'italic',
++    },
++    {
++      path: '../ibm-plex/IBMPlexMono-Light.otf',
++      weight: '300',
++      style: 'normal',
++    },
++    {
++      path: '../ibm-plex/IBMPlexMono-LightItalic.otf',
++      weight: '300',
++      style: 'italic',
++    },
++    {
++      path: '../ibm-plex/IBMPlexMono-Regular.otf',
++      weight: '400',
++      style: 'normal',
++    },
++    {
++      path: '../ibm-plex/IBMPlexMono-Italic.otf',
++      weight: '400',
++      style: 'italic',
++    },
++    {
++      path: '../ibm-plex/IBMPlexMono-Medium.otf',
++      weight: '500',
++      style: 'normal',
++    },
++    {
++      path: '../ibm-plex/IBMPlexMono-MediumItalic.otf',
++      weight: '500',
++      style: 'italic',
++    },
++    {
++      path: '../ibm-plex/IBMPlexMono-SemiBold.otf',
++      weight: '600',
++      style: 'normal',
++    },
++    {
++      path: '../ibm-plex/IBMPlexMono-SemiBoldItalic.otf',
++      weight: '600',
++      style: 'italic',
++    },
++    {
++      path: '../ibm-plex/IBMPlexMono-Bold.otf',
++      weight: '700',
++      style: 'normal',
++    },
++    {
++      path: '../ibm-plex/IBMPlexMono-BoldItalic.otf',
++      weight: '700',
++      style: 'italic',
++    },
++  ],
+   display: "swap",
+   variable: "--font-ibm-plex-mono",
+ });
