@@ -13,7 +13,7 @@ buildGoModule rec {
     filter = path: type: !(type != "directory" && lib.hasSuffix ".nix" path);
   };
 
-  vendorHash = "sha256-AThrcTXGfcweY1CJ2KRGDi/v0uyxaQr7JWi998ZE41M=";
+  vendorHash = "sha256-jeGo/Y+evhybU0ftpIUfJ88OmGTtwaJi0I3nAVNlHis=";
 
   ldflags = lib.attrsets.foldlAttrs (
     ldflags: name: value:
