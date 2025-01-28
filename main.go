@@ -11,66 +11,90 @@ import (
 	"github.com/hizla/hizla/internal"
 )
 
-var (
-	flagVerbose bool
+//go:embed LICENSE
+var license string
 
-	//go:embed LICENSE
-	license string
-)
-
-func init() {
-	flag.BoolVar(&flagVerbose, "v", false, "Verbose output")
+type command struct {
+	name, description string
 }
 
+var (
+	flagVerbose bool
+	commands    = []command{
+		{"version", "Show hizla version"},
+		{"license", "Show full license text"},
+		{"help", "Show this help message"},
+		{"serve", "Start the web server (internal)"},
+	}
+)
+
 func main() {
+	flag.BoolVar(&flagVerbose, "v", false, "Enable verbose output")
+	flag.Usage = printUsage
+	flag.Parse()
+
 	log.SetFlags(0)
 	log.SetPrefix("hizla: ")
-
-	flag.CommandLine.Usage = func() {
-		fmt.Println()
-		fmt.Println("Usage:\thizla [-v] COMMAND [OPTIONS]")
-		fmt.Println()
-		fmt.Println("Commands:")
-		w := tabwriter.NewWriter(os.Stdout, 0, 1, 4, ' ', 0)
-		commands := [][2]string{
-			{"version", "Show hizla version"},
-			{"license", "Show full license text"},
-			{"help", "Show this help message"},
-		}
-		for _, c := range commands {
-			_, _ = fmt.Fprintf(w, "\t%s\t%s\n", c[0], c[1])
-		}
-		if err := w.Flush(); err != nil {
-			log.Printf("cannot write command list: %v", err)
-		}
-		fmt.Println()
+	if flagVerbose {
+		log.Println("Verbose mode enabled")
 	}
-	flag.Parse()
 
 	args := flag.Args()
 	if len(args) == 0 {
-		flag.CommandLine.Usage()
+		printUsage()
 		os.Exit(0)
 	}
 
-	switch args[0] {
-	case "version": // print comp version string
-		if v, ok := internal.Check(internal.Version); ok {
-			fmt.Println(v)
-		} else {
-			fmt.Println("impure")
-		}
-		os.Exit(0)
-	case "license": // print embedded license
+	handleCommand(args)
+}
+
+func handleCommand(args []string) {
+	cmd := args[0]
+	if flagVerbose {
+		log.Printf("Executing command: %s", cmd)
+	}
+
+	switch cmd {
+	case "version":
+		printVersion()
+	case "license":
 		fmt.Println(license)
-		os.Exit(0)
-	case "help": // print help message
-		flag.CommandLine.Usage()
-		return
-
-	// internal commands
+	case "help":
+		printUsage()
 	case "serve":
+		if flagVerbose {
+			log.Println("Starting server with verbose mode")
+		}
 		doServe(args)
-		os.Exit(0)
+	default:
+		log.Printf("unknown command: %q", cmd)
+		printUsage()
+		os.Exit(1)
 	}
+}
+
+func printVersion() {
+	if v, ok := internal.Check(internal.Version); ok {
+		fmt.Println(v)
+	} else if flagVerbose {
+		log.Println("Impure build detected")
+		fmt.Println("impure")
+	} else {
+		fmt.Println("impure")
+	}
+}
+
+func printUsage() {
+	fmt.Println("\nUsage:\thizla [-v] COMMAND [OPTIONS]")
+	fmt.Println("Options:")
+	fmt.Println("  -v\tVerbose output")
+	fmt.Println("Commands:")
+
+	w := tabwriter.NewWriter(os.Stdout, 0, 1, 4, ' ', 0)
+	for _, cmd := range commands {
+		fmt.Fprintf(w, "\t%s\t%s\n", cmd.name, cmd.description)
+	}
+	w.Flush()
+
+	fmt.Println("\nUse 'hizla help' for more information")
 }
