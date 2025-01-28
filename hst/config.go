@@ -11,7 +11,12 @@ var (
 )
 
 type ServeAPI struct {
-	Address string `json:"address"`
+	Address    string `json:"address"`
+	DbHost     string `json:"db_host"`
+	DbPort     string `json:"db_port"`
+	DbUser     string `json:"db_user"`
+	DbPassword string `json:"db_password"`
+	DbName     string `json:"db_name"`
 }
 
 func (s *ServeAPI) FromEnviron() error {
