@@ -2,75 +2,51 @@ package main
 
 import (
 	_ "embed"
-	"flag"
 	"fmt"
-	"log"
-	"os"
-	"text/tabwriter"
-
+	"git.gensokyo.uk/security/fortify/command"
 	"github.com/hizla/hizla/internal"
+	"log"
+	"log/slog"
+	"os"
 )
 
-var (
-	flagVerbose bool
-
-	//go:embed LICENSE
-	license string
-)
-
-func init() {
-	flag.BoolVar(&flagVerbose, "v", false, "Verbose output")
-}
+//go:embed LICENSE
+var license string
 
 func main() {
 	log.SetFlags(0)
 	log.SetPrefix("hizla: ")
 
-	flag.CommandLine.Usage = func() {
-		fmt.Println()
-		fmt.Println("Usage:\thizla [-v] COMMAND [OPTIONS]")
-		fmt.Println()
-		fmt.Println("Commands:")
-		w := tabwriter.NewWriter(os.Stdout, 0, 1, 4, ' ', 0)
-		commands := [][2]string{
-			{"version", "Show hizla version"},
-			{"license", "Show full license text"},
-			{"help", "Show this help message"},
-		}
-		for _, c := range commands {
-			_, _ = fmt.Fprintf(w, "\t%s\t%s\n", c[0], c[1])
-		}
-		if err := w.Flush(); err != nil {
-			log.Printf("cannot write command list: %v", err)
-		}
-		fmt.Println()
-	}
-	flag.Parse()
+	var flagVerbose bool
 
-	args := flag.Args()
-	if len(args) == 0 {
-		flag.CommandLine.Usage()
-		os.Exit(0)
-	}
+	c := command.New(os.Stderr, log.Printf, "hizla", func(args []string) error {
+		slog.SetLogLoggerLevel(slog.LevelDebug)
+		return nil
+	}).Flag(&flagVerbose, "v", command.BoolFlag(false), "Verbose output")
 
-	switch args[0] {
-	case "version": // print comp version string
+	c.Command("version", "Show hizla version", func([]string) error {
 		if v, ok := internal.Check(internal.Version); ok {
 			fmt.Println(v)
 		} else {
 			fmt.Println("impure")
 		}
-		os.Exit(0)
-	case "license": // print embedded license
+		return nil
+	}).Command("license", "Show full license text", func([]string) error {
 		fmt.Println(license)
-		os.Exit(0)
-	case "help": // print help message
-		flag.CommandLine.Usage()
-		return
-
-	// internal commands
-	case "serve":
+		return nil
+	}).Command("help", "Show this help message", func([]string) error {
+		c.PrintHelp()
+		return nil
+	}).Command("serve", command.UsageInternal, func(args []string) error {
 		doServe(args)
+		return nil
+	})
+
+	c.MustParse(os.Args[1:], func(err error) {
+		if err != nil {
+			log.Printf("error: %v", err)
+			os.Exit(1)
+		}
 		os.Exit(0)
-	}
+	})
 }
