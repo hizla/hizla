@@ -4,6 +4,8 @@ go 1.23.3
 
 require github.com/gofiber/fiber/v2 v2.52.6
 
+require git.gensokyo.uk/security/fortify v0.2.18
+
 require (
 	github.com/BurntSushi/toml v1.4.0
 	github.com/andybalholm/brotli v1.1.0 // indirect
