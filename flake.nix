@@ -52,6 +52,8 @@
           pkgs = nixpkgsFor.${system};
         in
         {
+          nixos = pkgs.callPackage ./test.nix { inherit system self; };
+
           formatting = treefmtEval.${system}.config.build.check self;
 
           lint =
